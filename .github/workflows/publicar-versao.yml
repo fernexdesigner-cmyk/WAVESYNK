@@ -1,0 +1,20 @@
+name: Publicar versão
+on:
+  push:
+    branches: ['release-*']
+permissions:
+  contents: write
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Criar a versão com os instaladores
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          VER=$(grep '^version:' files/latest.yml | awk '{print $2}')
+          gh release delete "v$VER" --repo "$GITHUB_REPOSITORY" --yes --cleanup-tag || true
+          gh release create "v$VER" --repo "$GITHUB_REPOSITORY" --target main \
+            --title "WaveSynk $VER" --notes-file files/NOTES.md \
+            files/latest.yml files/WaveSynk-Setup-$VER.exe files/WaveSynk-Setup-$VER.exe.blockmap files/WaveSynk-$VER-portatil.exe
