@@ -1,0 +1,14 @@
+name: Atualizar notas da versão
+on:
+  push:
+    branches: ['android-*-notas']
+permissions:
+  contents: write
+jobs:
+  notes:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: gh release edit v1.7.5 --repo "$GITHUB_REPOSITORY" --notes-file files/NOTES.md
