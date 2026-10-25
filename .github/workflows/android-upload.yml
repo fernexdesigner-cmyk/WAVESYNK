@@ -1,0 +1,19 @@
+name: Anexar APK do Android
+on:
+  push:
+    branches: ['android-*']
+permissions:
+  contents: write
+jobs:
+  upload:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Anexar o APK à versão
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          for f in files/*-android.apk; do
+            VER=$(basename "$f" | sed -E 's/WaveSynk-([0-9.]+)-android.apk/\1/')
+            gh release upload "v$VER" "$f" --repo "$GITHUB_REPOSITORY" --clobber
+          done
